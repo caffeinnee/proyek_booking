@@ -8,19 +8,19 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    $lapangans = Lapangan::all();
+    return view('welcome', [
+        'lapangans' => $lapangans
+    ]);
+})->name('welcome');
 
 Route::get('/dashboard', function () {
-    $lapangans = Lapangan::all();
-
     $myBookings = Booking::where('user_id', Auth::id())
                         ->with('lapangan')
                         ->orderBy('tanggal_booking', 'desc')
                         ->get();
 
     return view('dashboard', [
-        'lapangans' => $lapangans,
         'myBookings' => $myBookings,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');

@@ -22,23 +22,6 @@
                         </div>
                     @endif
 
-                    <h2 class="text-xl font-semibold mb-4">Daftar Lapangan Tersedia</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        @foreach ($lapangans as $lapangan)
-                            <div class="p-4 bg-white shadow rounded-lg border border-gray-100">
-                                <strong class="text-lg text-indigo-600">{{ $lapangan->nama_lapangan }}</strong>
-                                <p class="text-sm mt-1">Jenis: {{ $lapangan->jenis }}</p>
-                                <p class="text-md font-bold mt-2">
-                                    Harga: Rp {{ number_format($lapangan->harga_per_jam, 0, ',', '.') }} / jam
-                                </p>
-                                <a href="{{ route('booking.create', ['lapangan' => $lapangan->id]) }}" class="inline-block mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">
-                                    Pesan Sekarang
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-
                     <div class="mt-8">
                         <h2 class="text-xl font-semibold mb-4">Riwayat Booking Saya</h2>
 
