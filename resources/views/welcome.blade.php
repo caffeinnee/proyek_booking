@@ -166,7 +166,7 @@
                                     "Aplikasi ini memudahkan pencarian aktivitas olahraga, mengembangkan komunitas olahraga, dan memesan tempat olahraga. Ini adalah ekosistem olahraga yang menyeluruh."
                                 </blockquote>
                                 <div class="mt-8">
-                                    <p class="font-semibold text-lg text-gray-900">Cristiano Ronaldo</p>
+                                    <p class="font-semibold text-lg text-gray-900">Messi</p>
                                     <p class="text-gray-500">Pemain SepakBola Profesional</p>
                                 </div>
                             </div>

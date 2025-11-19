@@ -40,15 +40,20 @@
                         </button>
                     </x-slot>
                     <x-slot name="content">
+                        @if(Auth::user()->is_admin)
+                            <x-dropdown-link :href="route('admin.dashboard')" class="font-bold">
+                                {{ __('Super Admin Panel') }}
+                            </x-dropdown-link>
+                        @endif
+
+                        @if(Auth::user()->role === 'mitra')
+                            <x-dropdown-link :href="route('mitra.index')" class="font-bold">
+                                {{ __('Area Mitra') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('dashboard')">
                             {{ __('Dashboard') }}
                         </x-dropdown-link>
-
-                        @if(Auth::user()->is_admin)
-                            <x-dropdown-link :href="route('admin.dashboard')">
-                                {{ __('Admin Dashboard') }}
-                            </x-dropdown-link>
-                        @endif
 
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
@@ -92,12 +97,6 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
-            @if(Auth::user()->is_admin)
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="bg-red-50 text-red-700">
-                    {{ __('Admin Dashboard') }}
-                </x-responsive-nav-link>
-            @endif
         </div>
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
@@ -107,6 +106,17 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if(Auth::user()->is_admin)
+                    <x-responsive-nav-link :href="route('admin.dashboard')" class="font-bold">
+                        {{ __('Super Admin Panel') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                @if(Auth::user()->role === 'mitra')
+                    <x-responsive-nav-link :href="route('mitra.index')" class="font-bold">
+                        {{ __('Area Mitra') }}
+                    </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

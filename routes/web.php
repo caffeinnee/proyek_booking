@@ -8,40 +8,30 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MitraController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
 Route::get('/katalog', function (Request $request) {
-    
     $query = Lapangan::query();
     $searchTerm = $request->input('search');
-
     if ($searchTerm) {
         $query->where('nama_lapangan', 'like', '%' . $searchTerm . '%')
               ->orWhere('jenis', 'like', '%' . $searchTerm . '%');
     }
-
     $lapangans = $query->get();
-    
     return view('katalog', [
         'lapangans' => $lapangans,
         'searchTerm' => $searchTerm
     ]);
-    
 })->name('katalog');
 
-Route::get('/dashboard', function () {
-    $myBookings = Booking::where('user_id', Auth::id())
-                        ->with('lapangan')
-                        ->orderBy('tanggal_booking', 'desc')
-                        ->get();
-
-    return view('dashboard', [
-        'myBookings' => $myBookings,
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
     ->middleware(['auth', 'admin'])
@@ -65,6 +55,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/booking/create/{lapangan}', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
+    
+    Route::get('/mitra/daftar', [MitraController::class, 'create'])->name('mitra.create');
+    Route::post('/mitra/simpan', [MitraController::class, 'store'])->name('mitra.store');
+    Route::get('/mitra/dashboard', [MitraController::class, 'index'])->name('mitra.index');
+
+    Route::get('/mitra/lapangan/baru', [MitraController::class, 'createLapangan'])->name('mitra.lapangan.create');
+    Route::post('/mitra/lapangan/simpan', [MitraController::class, 'storeLapangan'])->name('mitra.lapangan.store');
+    
+    Route::delete('/mitra/hapus/{lapangan}', [MitraController::class, 'destroy'])->name('mitra.destroy');
 });
 
 require __DIR__.'/auth.php';

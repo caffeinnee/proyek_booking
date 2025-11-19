@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        $bookings = Booking::with('user', 'lapangan')
-                            ->latest()
-                            ->get();
+        $user = auth()->user();
+        $bookingsQuery = Booking::with('user', 'lapangan')->latest();
+
+        if ($user->is_admin) {
+        } else {
+            $bookingsQuery->whereHas('lapangan', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            });
+        }
+
+        $bookings = $bookingsQuery->get();
         
         return view('admin.dashboard', [
             'bookings' => $bookings

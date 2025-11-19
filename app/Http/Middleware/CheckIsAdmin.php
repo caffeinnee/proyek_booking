@@ -12,8 +12,9 @@ class CheckIsAdmin
 
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->is_admin) {
-            
+        $user = Auth::user();
+
+        if (Auth::check() && ($user->is_admin || $user->role === 'mitra')) {
             return $next($request);
         }
 
