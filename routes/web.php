@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -62,8 +63,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mitra/lapangan/baru', [MitraController::class, 'createLapangan'])->name('mitra.lapangan.create');
     Route::post('/mitra/lapangan/simpan', [MitraController::class, 'storeLapangan'])->name('mitra.lapangan.store');
-    
     Route::delete('/mitra/hapus/{lapangan}', [MitraController::class, 'destroy'])->name('mitra.destroy');
+    Route::get('/mitra/lapangan/{lapangan}/edit', [MitraController::class, 'editLapangan'])->name('mitra.lapangan.edit');
+    Route::put('/mitra/lapangan/{lapangan}', [MitraController::class, 'updateLapangan'])->name('mitra.lapangan.update');
+
+    Route::get('/cara-pesan', [PageController::class, 'caraPesan'])->name('pages.cara-pesan');
+    Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('pages.tentang-kami');
 });
 
 require __DIR__.'/auth.php';

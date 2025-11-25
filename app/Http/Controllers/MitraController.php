@@ -82,7 +82,7 @@ class MitraController extends Controller
             'lokasi' => $request->lokasi,
             'harga_per_jam' => $request->harga_per_jam,
             'rating' => 0,
-            'gambar_url' => $gambarUrl, // <-- SIMPAN URL FOTO ASLI DI SINI
+            'gambar_url' => $gambarUrl,
         ]);
 
         return redirect()->route('mitra.index')->with('success', 'Lapangan baru berhasil ditambahkan!');
@@ -98,5 +98,51 @@ class MitraController extends Controller
 
         return redirect()->route('mitra.index')->with('success', 'Lapangan berhasil dihapus.');
     }
+
+    public function editLapangan(Lapangan $lapangan)
+    {
+        if ($lapangan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403);
+        }
+
+        return view('mitra.edit-lapangan', [
+            'lapangan' => $lapangan
+        ]);
+    }
+
+    public function updateLapangan(Request $request, Lapangan $lapangan)
+    {
+        if ($lapangan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'nama_lapangan' => 'required|string|max:255',
+            'jenis' => 'required|string',
+            'lokasi' => 'required|string',
+            'harga_per_jam' => 'required|numeric|min:0',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
+        ]);
+
+        $dataUpdate = [
+            'nama_lapangan' => $request->nama_lapangan,
+            'jenis' => $request->jenis,
+            'lokasi' => $request->lokasi,
+            'harga_per_jam' => $request->harga_per_jam,
+        ];
+
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+            
+            $dataUpdate['gambar_url'] = asset('images/' . $filename);
+        }
+
+        $lapangan->update($dataUpdate);
+
+        return redirect()->route('mitra.index')->with('success', 'Data lapangan berhasil diperbarui!');
+    }
+
 
 }

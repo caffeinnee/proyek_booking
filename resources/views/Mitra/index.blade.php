@@ -85,7 +85,7 @@
                                 <h4 class="font-bold text-lg text-gray-900 truncate">{{ $lapangan->nama_lapangan }}</h4>
                                 <p class="text-red-600 font-bold text-sm mt-1">Rp {{ number_format($lapangan->harga_per_jam, 0, ',', '.') }} / jam</p>
                                 <div class="mt-4 flex gap-2">
-                                    <button class="flex-1 py-1.5 bg-yellow-50 text-yellow-700 text-xs font-bold rounded border border-yellow-200">Edit</button>
+                                    <a href="{{ route('mitra.lapangan.edit', $lapangan->id) }}" class="flex-1 py-2 bg-yellow-50 text-center text-yellow-700 text-xs font-bold rounded-lg hover:bg-yellow-100 border border-yellow-200 transition">Edit</a>
                                     <form action="{{ route('mitra.destroy', $lapangan->id) }}" method="POST" class="flex-1" onsubmit="return confirm('Hapus lapangan?');">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="w-full py-1.5 bg-red-50 text-red-700 text-xs font-bold rounded border border-red-200">Hapus</button>

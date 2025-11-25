@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     
-                    <a href="{{ route('admin.dashboard') }}" class="text-sm text-gray-600 hover:text-red-700">&larr; Kembali ke Rekap</a>
+                    <a href="{{ Auth::user()->is_admin ? route('admin.dashboard') : route('mitra.index') }}" class="text-sm text-gray-600 hover:text-red-700">&larr; Kembali ke Rekap</a>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
                         
