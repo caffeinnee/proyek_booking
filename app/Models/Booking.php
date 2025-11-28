@@ -22,6 +22,8 @@ class Booking extends Model
         'tanggal_booking',
         'jam_mulai',
         'jam_selesai',
+        'status',
+        'bukti_bayar',
     ];
 
     public function lapangan()

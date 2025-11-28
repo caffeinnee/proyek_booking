@@ -90,11 +90,15 @@ class MitraController extends Controller
 
     public function destroy(Lapangan $lapangan)
     {
-        if ($lapangan->user_id !== Auth::id()) {
+        if ($lapangan->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403, 'ANDA TIDAK BERHAK MENGHAPUS LAPANGAN INI.');
         }
 
         $lapangan->delete();
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('super.dashboard')->with('success', 'Lapangan berhasil dihapus oleh Admin.');
+        }
 
         return redirect()->route('mitra.index')->with('success', 'Lapangan berhasil dihapus.');
     }

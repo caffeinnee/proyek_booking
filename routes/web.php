@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MitraController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SuperAdminController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,16 +21,23 @@ Route::get('/', function () {
 Route::get('/katalog', function (Request $request) {
     $query = Lapangan::query();
     $searchTerm = $request->input('search');
+
     if ($searchTerm) {
         $query->where('nama_lapangan', 'like', '%' . $searchTerm . '%')
               ->orWhere('jenis', 'like', '%' . $searchTerm . '%');
     }
+
     $lapangans = $query->get();
+    
     return view('katalog', [
         'lapangans' => $lapangans,
         'searchTerm' => $searchTerm
     ]);
 })->name('katalog');
+
+Route::get('/cara-pesan', [PageController::class, 'caraPesan'])->name('pages.cara-pesan');
+Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('pages.tentang-kami');
+
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -50,13 +59,25 @@ Route::post('/admin/bookings/{booking}/cancel', [AdminController::class, 'cancel
     ->middleware(['auth', 'admin'])
     ->name('admin.booking.cancel');
 
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/super/dashboard', [SuperAdminController::class, 'index'])->name('super.dashboard');
+    Route::delete('/super/users/{user}', [SuperAdminController::class, 'destroy'])->name('super.users.destroy');
+});
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
     Route::get('/booking/create/{lapangan}', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
     
+    Route::get('/booking/{booking}/bayar', [BookingController::class, 'showPayment'])->name('booking.payment');
+    Route::patch('/booking/{booking}/bayar', [BookingController::class, 'uploadPayment'])->name('booking.payment.update');
+    Route::patch('/booking/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking.user.cancel');
+   
     Route::get('/mitra/daftar', [MitraController::class, 'create'])->name('mitra.create');
     Route::post('/mitra/simpan', [MitraController::class, 'store'])->name('mitra.store');
     Route::get('/mitra/dashboard', [MitraController::class, 'index'])->name('mitra.index');
@@ -67,8 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/mitra/lapangan/{lapangan}/edit', [MitraController::class, 'editLapangan'])->name('mitra.lapangan.edit');
     Route::put('/mitra/lapangan/{lapangan}', [MitraController::class, 'updateLapangan'])->name('mitra.lapangan.update');
 
-    Route::get('/cara-pesan', [PageController::class, 'caraPesan'])->name('pages.cara-pesan');
-    Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('pages.tentang-kami');
+    
 });
+
+Route::get('/lapangan/{lapangan}', [App\Http\Controllers\LapanganController::class, 'show'])->name('lapangan.show');
 
 require __DIR__.'/auth.php';

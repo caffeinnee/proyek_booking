@@ -48,8 +48,60 @@ class BookingController extends Controller
             'tanggal_booking' => $validated['tanggal_booking'],
             'jam_mulai' => $validated['jam_mulai'],
             'jam_selesai' => $validated['jam_selesai'],
+            'status' => 'pending',
         ]);
 
         return redirect()->route('dashboard')->with('success', 'Booking berhasil dibuat! Silakan lakukan pembayaran.');
     }
+
+    public function showPayment(Booking $booking)
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('booking.payment', ['booking' => $booking]);
+    }
+
+    public function uploadPayment(Request $request, Booking $booking)
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'bukti_bayar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('bukti_bayar')) {
+            $file = $request->file('bukti_bayar');
+            $filename = time() . '_bukti_' . $booking->id . '.' . $file->getClientOriginalExtension();
+            
+            $file->move(public_path('images/bukti_bayar'), $filename);
+            
+            $booking->update([
+                'bukti_bayar' => 'images/bukti_bayar/' . $filename,
+            ]);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Tunggu konfirmasi admin.');
+    }
+
+    public function cancel(Booking $booking)
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($booking->status !== 'pending') {
+            return redirect()->back()->with('error', 'Pesanan yang sudah diproses tidak bisa dibatalkan otomatis.');
+        }
+
+        $booking->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+    
 }

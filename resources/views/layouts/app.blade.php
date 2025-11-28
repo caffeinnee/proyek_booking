@@ -7,32 +7,35 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 flex flex-col md:flex-row">
+        <div class="min-h-screen bg-gray-100 flex"> <!-- Tambahkan flex di sini -->
             
-            <div class="md:sticky md:top-0 md:h-screen md:overflow-y-auto flex-shrink-0 z-20">
-                @include('layouts.navigation')
-            </div>
+            <!-- Sidebar -->
+            @include('layouts.navigation')
 
-            <main class="flex-1 min-w-0 flex flex-col min-h-screen"> 
+            <!-- Page Content -->
+            <main class="flex-1"> <!-- Tambahkan flex-1 agar konten mengisi sisa ruang -->
                 
+                <!-- Header (Opsional, bisa dihapus jika ingin header menyatu dengan konten) -->
                 @if (isset($header))
-                    <header class="bg-white shadow sm:hidden">
+                    <header class="bg-white shadow">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
                     </header>
                 @endif
 
-                <div class="py-6 flex-grow px-4 sm:px-6 lg:px-8"> 
+                <div class="py-6">
                     {{ $slot }}
                 </div>
-                
-                @include('layouts.footer') 
             </main>
-            
         </div>
     </body>
 </html>

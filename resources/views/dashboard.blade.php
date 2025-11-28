@@ -11,7 +11,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-bold">Halo, {{ Auth::user()->name }}! 👋</h3>
-                    <p class="text-gray-500 text-sm mt-1">Selamat datang kembali di Booking Lapangan. Mau main olahraga apa hari ini?</p>
+                    <p class="text-gray-500 text-sm mt-1">Selamat datang kembali. Cek status pesananmu di bawah ini.</p>
                 </div>
             </div>
 
@@ -52,14 +52,33 @@
                                         Jam: {{ \Carbon\Carbon::parse($booking->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($booking->jam_selesai)->format('H:i') }}
                                     </p>
                                 </div>
-                                <div class="mt-2 md:mt-0">
-                                    <span class="px-3 py-1 text-xs font-bold rounded-full 
-                                        @if($booking->status == 'confirmed') bg-green-100 text-green-800 
-                                        @elseif($booking->status == 'cancelled') bg-red-100 text-red-800 
-                                        @else bg-yellow-100 text-yellow-800 @endif">
-                                        {{ ucfirst($booking->status) }}
-                                    </span>
-                                </div>
+                                
+                            <div class="mt-2 md:mt-0 flex items-center gap-3">
+                                <span class="px-3 py-1 text-xs font-bold rounded-full ...">
+                                    {{ ucfirst($booking->status) }}
+                                </span>
+
+                                @if($booking->status == 'pending')
+                                    
+                                    @if($booking->bukti_bayar)
+                                        <span class="text-xs text-blue-600 font-semibold border border-blue-200 px-2 py-1 rounded bg-blue-50">
+                                            Bukti Terkirim
+                                        </span>
+                                    @else
+                                        <a href="{{ route('booking.payment', $booking) }}" class="text-xs text-white bg-indigo-600 px-3 py-1.5 rounded hover:bg-indigo-700 transition shadow-sm">
+                                            Upload Bukti
+                                        </a>
+                                    @endif
+
+                                    <form action="{{ route('booking.user.cancel', $booking) }}" method="POST" class="ml-2" onsubmit="return confirm('Yakin ingin membatalkan booking ini?');">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="text-xs text-red-600 border border-red-200 px-2 py-1 rounded hover:bg-red-50 transition">
+                                            Batalkan
+                                        </button>
+                                    </form>
+
+                                @endif
                             </div>
                         @empty
                             <div class="p-8 text-center border-2 border-dashed border-gray-300 rounded-lg">
