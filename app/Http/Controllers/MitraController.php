@@ -35,15 +35,17 @@ class MitraController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        $userId = Auth::id();
 
-        $lapangans = Lapangan::where('user_id', $user->id)->get();
+        $lapangans = Lapangan::where('user_id', $userId)->get();
 
-        $bookings = Booking::whereHas('lapangan', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->with(['user', 'lapangan'])->latest()->get();
+        $bookings = Booking::whereHas('lapangan', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->with(['user', 'lapangan'])
+        ->latest()
+        ->get();
 
-        return view('mitra.index', [
+        return view('Mitra.index', [
             'lapangans' => $lapangans,
             'bookings' => $bookings
         ]);
