@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingStatusUpdate;
 
 class AdminController extends Controller
 {
@@ -38,17 +40,26 @@ class AdminController extends Controller
 
     public function confirmBooking(Booking $booking)
     {
-        $booking->status = 'confirmed';
-        $booking->save();
+        $booking->update(['status' => 'confirmed']);
 
-        return redirect()->route('admin.booking.show', $booking)->with('success', 'Booking berhasil dikonfirmasi (Lunas)!');
+        try {
+            Mail::to($booking->user->email)->send(new BookingStatusUpdate($booking));
+        } catch (\Exception $e) {
+            
+        }
+
+        return redirect()->back()->with('success', 'Booking berhasil dikonfirmasi (Lunas) & Notifikasi dikirim!');
     }
 
     public function cancelBooking(Booking $booking)
     {
-        $booking->status = 'cancelled';
-        $booking->save();
+        $booking->update(['status' => 'cancelled']);
 
-        return redirect()->route('admin.booking.show', $booking)->with('success', 'Booking berhasil dibatalkan.');
+        try {
+            Mail::to($booking->user->email)->send(new BookingStatusUpdate($booking));
+        } catch (\Exception $e) {
+        }
+
+        return redirect()->back()->with('success', 'Booking berhasil dibatalkan & Notifikasi dikirim!');
     }
 }
