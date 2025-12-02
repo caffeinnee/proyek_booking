@@ -1,8 +1,12 @@
 <nav x-data="{ open: false }" class="bg-white shadow-sm border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center"> <div class="shrink-0 flex items-center">
-                <a href="{{ route('welcome') }}" class="font-bold text-lg text-gray-800 hover:text-red-700 transition">
-                    Booking Lapangan
+        <div class="flex justify-between h-16 items-center"> 
+            <div class="shrink-0 flex items-center gap-3">
+                <a href="{{ route('welcome') }}" class="flex items-center">
+                    <x-application-logo class="block h-14 w-auto fill-current text-red-600" />
+                </a>
+                <a href="{{ route('welcome') }}" class="font-bold text-xl text-gray-800 hover:text-red-700 transition">
+                    {{ config('app.name') }}
                 </a>
             </div>
 
