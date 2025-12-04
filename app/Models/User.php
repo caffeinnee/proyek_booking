@@ -21,11 +21,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
-        'no_wa',    
-        'role',  
-        'nama_venue',
-        'alamat',   
+        'is_admin',  
+        'role',        
+        'no_wa',        
+        'nama_venue',  
+        'alamat',       
+        'status_mitra', 
     ];
 
     /**

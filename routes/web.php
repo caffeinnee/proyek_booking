@@ -63,6 +63,10 @@ Route::post('/admin/bookings/{booking}/cancel', [AdminController::class, 'cancel
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/super/dashboard', [SuperAdminController::class, 'index'])->name('super.dashboard');
     Route::delete('/super/users/{user}', [SuperAdminController::class, 'destroy'])->name('super.users.destroy');
+    Route::patch('/super/mitra/{user}/approve', [SuperAdminController::class, 'approveMitra'])->name('super.mitra.approve');
+    Route::patch('/super/mitra/{user}/reject', [SuperAdminController::class, 'rejectMitra'])->name('super.mitra.reject');
+    Route::get('/super/admin/create', [SuperAdminController::class, 'createAdmin'])->name('super.admin.create');
+    Route::post('/super/admin/store', [SuperAdminController::class, 'storeAdmin'])->name('super.admin.store');
 });
 
 

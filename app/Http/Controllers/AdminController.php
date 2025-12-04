@@ -13,16 +13,17 @@ class AdminController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-        $bookingsQuery = Booking::with('user', 'lapangan')->latest();
 
         if ($user->is_admin) {
-        } else {
-            $bookingsQuery->whereHas('lapangan', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            });
+            return redirect()->route('super.dashboard')->with('error', 'Halaman Kelola Orderan hanya untuk Mitra.');
         }
 
-        $bookings = $bookingsQuery->get();
+        $bookings = Booking::with('user', 'lapangan')
+            ->whereHas('lapangan', function ($query) use ($user) {
+                $query->where('user_id', $user->id); 
+            })
+            ->latest()
+            ->get();
         
         return view('admin.dashboard', [
             'bookings' => $bookings

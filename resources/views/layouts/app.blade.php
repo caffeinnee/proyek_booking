@@ -15,15 +15,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 flex"> <!-- Tambahkan flex di sini -->
+        {{-- PERUBAHAN DI SINI: tambahkan 'flex-col md:flex-row' --}}
+        {{-- Artinya: Di HP jadi Kolom (atas-bawah), di Desktop jadi Baris (kiri-kanan) --}}
+        <div class="min-h-screen bg-gray-100 flex flex-col md:flex-row"> 
             
-            <!-- Sidebar -->
             @include('layouts.navigation')
 
-            <!-- Page Content -->
-            <main class="flex-1"> <!-- Tambahkan flex-1 agar konten mengisi sisa ruang -->
-                
-                <!-- Header (Opsional, bisa dihapus jika ingin header menyatu dengan konten) -->
+            <main class="flex-1"> 
                 @if (isset($header))
                     <header class="bg-white shadow">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

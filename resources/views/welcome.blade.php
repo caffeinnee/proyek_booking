@@ -43,7 +43,7 @@
                                 <h3 class="text-xl font-semibold">Futsal</h3>
                             </a>
                             
-                            <a href="{{ route('katalog', ['search' => 'matras']) }}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                            <a href="{{ route('katalog', ['search' => 'badminton']) }}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow">
                                 <div class="flex justify-center mb-4 h-16 w-16 mx-auto">
                                     <img src="{{ asset('images/icon-badminton.svg') }}" alt="Ikon Badminton" class="h-16 w-16">
                                 </div>
