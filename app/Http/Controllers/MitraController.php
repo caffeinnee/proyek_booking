@@ -109,11 +109,21 @@ class MitraController extends Controller
 
     public function createLapangan()
     {
+        
+        if (Auth::user()->role !== 'mitra') {
+            abort(403, 'Akses ditolak. Halaman ini hanya untuk Mitra.');
+        }
+
         return view('mitra.create-lapangan');
     }
 
     public function storeLapangan(Request $request)
     {
+
+        if (Auth::user()->role !== 'mitra') {
+                abort(403, 'Akses ditolak. Anda tidak berhak menambah lapangan.');
+            }
+
         $request->validate([
             'nama_lapangan' => 'required|string|max:255',
             'jenis' => 'required|string',
