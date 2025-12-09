@@ -200,20 +200,21 @@ class MitraController extends Controller
 
     public function indexRekening()
     {
-        $rekenings = \App\Models\Rekening::where('user_id', \Illuminate\Support\Facades\Auth::id())->get();
+        // Ambil rekening milik mitra yang sedang login
+        $rekenings = \App\Models\Rekening::where('user_id', Auth::id())->get();
         return view('mitra.rekening', ['rekenings' => $rekenings]);
     }
 
     public function storeRekening(Request $request)
     {
         $request->validate([
-            'nama_bank' => 'required|string',
+            'nama_bank' => 'required|string|max:50',
             'nomor_rekening' => 'required|numeric',
-            'atas_nama' => 'required|string',
+            'atas_nama' => 'required|string|max:100',
         ]);
 
         \App\Models\Rekening::create([
-            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+            'user_id' => Auth::id(),
             'nama_bank' => $request->nama_bank,
             'nomor_rekening' => $request->nomor_rekening,
             'atas_nama' => $request->atas_nama,
@@ -226,11 +227,12 @@ class MitraController extends Controller
     {
         $rekening = \App\Models\Rekening::findOrFail($id);
         
-        if ($rekening->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        // Pastikan yang menghapus adalah pemiliknya sendiri
+        if ($rekening->user_id !== Auth::id()) {
             abort(403);
         }
 
         $rekening->delete();
-        return back()->with('success', 'Rekening dihapus.');
+        return back()->with('success', 'Rekening berhasil dihapus.');
     }
 }

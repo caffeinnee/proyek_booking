@@ -9,14 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('rekenings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Punya Mitra siapa
-            $table->string('nama_bank');      // BCA, BRI, Mandiri, e-Wallet
-            $table->string('nomor_rekening'); // 1234567890
-            $table->string('atas_nama');      // Budi Santoso
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nama_bank');
+            $table->string('nomor_rekening');
+            $table->string('atas_nama');
             $table->timestamps();
         });
     }
