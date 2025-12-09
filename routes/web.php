@@ -92,7 +92,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/mitra/lapangan/{lapangan}/edit', [MitraController::class, 'editLapangan'])->name('mitra.lapangan.edit');
     Route::put('/mitra/lapangan/{lapangan}', [MitraController::class, 'updateLapangan'])->name('mitra.lapangan.update');
 
-    
+    Route::get('/mitra/rekening', [MitraController::class, 'indexRekening'])->name('mitra.rekening.index');
+    Route::post('/mitra/rekening', [MitraController::class, 'storeRekening'])->name('mitra.rekening.store');
+    Route::delete('/mitra/rekening/{id}', [MitraController::class, 'destroyRekening'])->name('mitra.rekening.destroy');
 });
 
 Route::get('/lapangan/{lapangan}', [App\Http\Controllers\LapanganController::class, 'show'])->name('lapangan.show');
