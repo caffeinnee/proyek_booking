@@ -58,6 +58,7 @@
                             {{ __('Kelola Orderan') }}
                         </a>
                         
+                        {{-- Menu Mitra dibuat standar tapi tetap responsif merah saat di-hover --}}
                         <a href="{{ route('mitra.index') }}" 
                            class="flex items-center w-full px-3 py-2 rounded-lg transition duration-150 ease-in-out group
                            {{ request()->routeIs('mitra.index') ? 'bg-red-50 text-red-700 font-bold' : 'text-gray-600 hover:bg-red-50 hover:text-red-700' }}">
@@ -65,7 +66,6 @@
                             {{ __('Kelola Lapangan') }}
                         </a>
 
-                        {{-- Menu Kelola Rekening (Baru Ditambahkan) --}}
                         <a href="{{ route('mitra.rekening.index') }}" 
                            class="flex items-center w-full px-3 py-2 rounded-lg transition duration-150 ease-in-out group
                            {{ request()->routeIs('mitra.rekening.index') ? 'bg-red-50 text-red-700 font-bold' : 'text-gray-600 hover:bg-red-50 hover:text-red-700' }}">
@@ -86,10 +86,6 @@
 
                 <div class="mt-auto pt-6 border-t border-gray-100">
                     <div class="flex items-center px-3 mb-3">
-                        {{-- Avatar Desktop --}}
-                        <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs mr-2">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
                         <div class="font-medium text-sm text-gray-800">{{ Auth::user()->name }}</div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
@@ -107,8 +103,8 @@
     {{-- MENU MOBILE (TAMPILAN HP) --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden md:hidden border-t border-gray-100 bg-white">
         
-        {{-- Info User Mobile (Avatar Merah) --}}
-        <div class="pt-4 pb-4 px-4 border-b border-gray-100 bg-gray-50">
+        {{-- Info User --}}
+        <div class="pt-4 pb-2 px-4 border-b border-gray-100 bg-gray-50">
             <div class="flex items-center">
                 <div class="shrink-0">
                     <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-lg border border-red-200">
@@ -123,7 +119,6 @@
         </div>
 
         <div class="pt-2 pb-3 space-y-1">
-            {{-- Menu dengan Hover Merah --}}
             <a href="{{ route('welcome') }}" 
                class="block w-full ps-3 pe-4 py-3 border-l-4 text-start text-base font-medium transition duration-150 ease-in-out
                {{ request()->routeIs('welcome') ? 'border-red-600 text-red-700 bg-red-50 font-bold' : 'border-transparent text-gray-600 hover:text-red-600 hover:bg-red-50 hover:border-red-300' }}">

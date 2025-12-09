@@ -11,11 +11,21 @@ class MitraController extends Controller
 {
     public function create()
     {
-        // Cek jika user sudah pernah mengajukan dan statusnya pending
-        if (Auth::user()->status_mitra === 'pending') {
+        $user = Auth::user();
+
+        // 1. BLOKIR JIKA SUDAH JADI MITRA RESMI
+        // Jika role-nya sudah 'mitra', lempar ke halaman kelola lapangan
+        if ($user->role === 'mitra') {
+            return redirect()->route('mitra.index')->with('info', 'Anda sudah terdaftar sebagai Mitra.');
+        }
+
+        // 2. BLOKIR JIKA SEDANG MENUNGGU (PENDING)
+        // Jika statusnya 'pending', lempar ke dashboard user biasa
+        if ($user->status_mitra === 'pending') {
             return redirect()->route('dashboard')->with('error', 'Pengajuan Anda sedang diproses oleh Admin. Harap tunggu.');
         }
 
+        // Jika belum daftar dan bukan mitra, baru boleh lihat form
         return view('mitra.create');
     }
 
