@@ -35,6 +35,23 @@ Route::get('/katalog', function (Request $request) {
     ]);
 })->name('katalog');
 
+Route::get('/pasang-storage', function () {
+    try {
+        $target = storage_path('app/public');
+        $link = public_path('storage');
+        
+        // Cek dulu apakah folder 'storage' di public sudah ada?
+        if (file_exists($link)) {
+            return "Folder public/storage SUDAH ADA. Hapus dulu lewat File Manager jika ingin link ulang.";
+        }
+
+        symlink($target, $link);
+        return "SUKSES! Symlink storage berhasil dibuat. Coba cek gambar sekarang.";
+    } catch (\Exception $e) {
+        return "GAGAL: " . $e->getMessage();
+    }
+});
+
 Route::get('/cara-pesan', [PageController::class, 'caraPesan'])->name('pages.cara-pesan');
 Route::get('/tentang-kami', [PageController::class, 'tentangKami'])->name('pages.tentang-kami');
 

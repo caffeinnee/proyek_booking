@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Lapangan;
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // Pastikan ini ada
 
 class MitraController extends Controller
 {
@@ -13,25 +14,19 @@ class MitraController extends Controller
     {
         $user = Auth::user();
 
-        // 1. BLOKIR JIKA SUDAH JADI MITRA RESMI
-        // Jika role-nya sudah 'mitra', lempar ke halaman kelola lapangan
         if ($user->role === 'mitra') {
             return redirect()->route('mitra.index')->with('info', 'Anda sudah terdaftar sebagai Mitra.');
         }
 
-        // 2. BLOKIR JIKA SEDANG MENUNGGU (PENDING)
-        // Jika statusnya 'pending', lempar ke dashboard user biasa
         if ($user->status_mitra === 'pending') {
             return redirect()->route('dashboard')->with('error', 'Pengajuan Anda sedang diproses oleh Admin. Harap tunggu.');
         }
 
-        // Jika belum daftar dan bukan mitra, baru boleh lihat form
         return view('mitra.create');
     }
 
     public function store(Request $request)
     {
-        // Validasi input ...
         $request->validate([
             'nama_venue' => 'required|string|max:255',
             'alamat' => 'required|string|max:500',
@@ -52,18 +47,17 @@ class MitraController extends Controller
 
     public function index()
     {
-        $user = \Illuminate\Support\Facades\Auth::user();
+        $user = Auth::user();
 
         if ($user->role !== 'mitra') {
             return redirect()->route('dashboard')->with('error', 'Anda belum menjadi Mitra resmi.');
         }
 
-        $lapangans = \App\Models\Lapangan::where('user_id', $user->id)->get();
+        $lapangans = Lapangan::where('user_id', $user->id)->get();
 
-        $mitraBookings = \App\Models\Booking::whereHas('lapangan', function ($query) use ($user) {
+        $mitraBookings = Booking::whereHas('lapangan', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->with('lapangan')->get();
-
         
         $totalPendapatan = 0;
         foreach ($mitraBookings as $booking) {
@@ -71,17 +65,10 @@ class MitraController extends Controller
                 try {
                     $jamMulai = \Carbon\Carbon::parse($booking->jam_mulai);
                     $jamSelesai = \Carbon\Carbon::parse($booking->jam_selesai);
-                    
                     $durasiJam = abs($jamSelesai->diffInHours($jamMulai));
-
-                    if ($durasiJam < 1) {
-                        $durasiJam = 1; 
-                    }
-                    
+                    if ($durasiJam < 1) $durasiJam = 1; 
                     $totalPendapatan += ($booking->lapangan->harga_per_jam * $durasiJam);
-                } catch (\Exception $e) {
-                    continue; 
-                }
+                } catch (\Exception $e) { continue; }
             }
         }
 
@@ -102,20 +89,17 @@ class MitraController extends Controller
 
     public function createLapangan()
     {
-        
         if (Auth::user()->role !== 'mitra') {
             abort(403, 'Akses ditolak. Halaman ini hanya untuk Mitra.');
         }
-
         return view('mitra.create-lapangan');
     }
 
     public function storeLapangan(Request $request)
     {
-
         if (Auth::user()->role !== 'mitra') {
-                abort(403, 'Akses ditolak. Anda tidak berhak menambah lapangan.');
-            }
+            abort(403, 'Akses ditolak. Anda tidak berhak menambah lapangan.');
+        }
 
         $request->validate([
             'nama_lapangan' => 'required|string|max:255',
@@ -131,13 +115,13 @@ class MitraController extends Controller
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
             
-            $file->move(public_path('images'), $filename);
-            
-            $gambarUrl = asset('images/' . $filename);
+            // Simpan ke storage (biar konsisten)
+            $path = $file->storeAs('lapangans', $filename, 'public'); 
+            $gambarUrl = asset('storage/lapangans/' . $filename);
         }
 
-        \App\Models\Lapangan::create([
-            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        Lapangan::create([
+            'user_id' => Auth::id(),
             'nama_lapangan' => $request->nama_lapangan,
             'jenis' => $request->jenis,
             'lokasi' => $request->lokasi,
@@ -149,35 +133,10 @@ class MitraController extends Controller
         return redirect()->route('mitra.index')->with('success', 'Lapangan baru berhasil ditambahkan!');
     }
 
-    public function destroy(Lapangan $lapangan)
-    {
-        if ($lapangan->user_id !== Auth::id() && !Auth::user()->is_admin) {
-            abort(403, 'ANDA TIDAK BERHAK MENGHAPUS LAPANGAN INI.');
-        }
-
-        $lapangan->delete();
-
-        if (Auth::user()->is_admin) {
-            return redirect()->route('super.dashboard')->with('success', 'Lapangan berhasil dihapus oleh Admin.');
-        }
-
-        return redirect()->route('mitra.index')->with('success', 'Lapangan berhasil dihapus.');
-    }
-
-    public function editLapangan(Lapangan $lapangan)
-    {
-        if ($lapangan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
-            abort(403);
-        }
-
-        return view('mitra.edit-lapangan', [
-            'lapangan' => $lapangan
-        ]);
-    }
-
     public function updateLapangan(Request $request, Lapangan $lapangan)
     {
-        if ($lapangan->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        // Pengecekan Longgar (!=) biar tidak error beda tipe data
+        if ($lapangan->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -199,18 +158,57 @@ class MitraController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images'), $filename);
             
-            $dataUpdate['gambar_url'] = asset('images/' . $filename);
+            // Hapus gambar lama (opsional)
+            if ($lapangan->gambar_url) {
+                $oldPath = str_replace(asset('storage/'), '', $lapangan->gambar_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $file->storeAs('lapangans', $filename, 'public');
+            $dataUpdate['gambar_url'] = asset('storage/lapangans/' . $filename);
         }
 
         $lapangan->update($dataUpdate);
         return redirect()->route('mitra.index')->with('success', 'Data lapangan berhasil diperbarui!');
     }
 
+    public function destroy(Lapangan $lapangan)
+    {
+        // Pengecekan Longgar (!=)
+        if ($lapangan->user_id != Auth::id() && !Auth::user()->is_admin) {
+            abort(403, 'ANDA TIDAK BERHAK MENGHAPUS LAPANGAN INI.');
+        }
+
+        if ($lapangan->gambar_url) {
+            $oldPath = str_replace(asset('storage/'), '', $lapangan->gambar_url);
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $lapangan->delete();
+
+        if (Auth::user()->is_admin) {
+            return redirect()->route('super.dashboard')->with('success', 'Lapangan berhasil dihapus oleh Admin.');
+        }
+
+        return redirect()->route('mitra.index')->with('success', 'Lapangan berhasil dihapus.');
+    }
+
+    public function editLapangan(Lapangan $lapangan)
+    {
+        // Pengecekan Longgar (!=)
+        if ($lapangan->user_id != Auth::id()) {
+            abort(403);
+        }
+
+        return view('mitra.edit-lapangan', [
+            'lapangan' => $lapangan
+        ]);
+    }
+
+    // --- REKENING ---
     public function indexRekening()
     {
-        // Ambil rekening milik mitra yang sedang login
         $rekenings = \App\Models\Rekening::where('user_id', Auth::id())->get();
         return view('mitra.rekening', ['rekenings' => $rekenings]);
     }
@@ -237,8 +235,7 @@ class MitraController extends Controller
     {
         $rekening = \App\Models\Rekening::findOrFail($id);
         
-        // Pastikan yang menghapus adalah pemiliknya sendiri
-        if ($rekening->user_id !== Auth::id()) {
+        if ($rekening->user_id != Auth::id()) {
             abort(403);
         }
 
