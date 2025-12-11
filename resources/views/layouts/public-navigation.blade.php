@@ -47,11 +47,12 @@
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
+                                    {{-- PERBAIKAN: Menu Super Admin sekarang standar (hanya Bold) --}}
                                     @if(Auth::user()->is_admin)
-                                        <x-dropdown-link :href="route('super.dashboard')" class="font-bold text-red-600 border-l-4 border-transparent hover:border-red-600 bg-red-50">{{ __('Super Admin Panel') }}</x-dropdown-link>
+                                        <x-dropdown-link :href="route('super.dashboard')" class="font-bold">{{ __('Super Admin Panel') }}</x-dropdown-link>
                                     @endif
                                     
-                                    {{-- PERBAIKAN: Area Mitra sekarang gayanya standar, hanya BOLD saja --}}
+                                    {{-- Menu Mitra standar (hanya Bold) --}}
                                     @if(Auth::user()->role === 'mitra')
                                         <x-dropdown-link :href="route('mitra.index')" class="font-bold">{{ __('Area Mitra') }}</x-dropdown-link>
                                     @endif
@@ -121,15 +122,15 @@
                     </div>
 
                     <div class="mt-3 space-y-1 px-2">
+                        {{-- PERBAIKAN: Super Admin Panel sekarang standar (hanya Bold, warna abu-abu/hitam) --}}
                         @if(Auth::user()->is_admin)
-                            <a href="{{ route('super.dashboard') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-red-600 hover:bg-red-50 hover:border-red-600 rounded-r-lg transition">
+                            <a href="{{ route('super.dashboard') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-700 hover:text-red-700 hover:bg-red-50 hover:border-red-300 rounded-r-lg transition">
                                 {{ __('Panel Super Admin') }}
                             </a>
                         @endif
                         
-                        {{-- PERBAIKAN: Area Mitra Mobile sekarang menggunakan warna standar (abu-abu/hitam) tapi BOLD --}}
                         @if(Auth::user()->role === 'mitra')
-                            <a href="{{ route('mitra.index') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-600 hover:text-gray-900 hover:bg-white hover:border-gray-300 rounded-r-lg transition">
+                            <a href="{{ route('mitra.index') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-700 hover:text-red-700 hover:bg-red-50 hover:border-red-300 rounded-r-lg transition">
                                 {{ __('Area Mitra') }}
                             </a>
                         @endif
