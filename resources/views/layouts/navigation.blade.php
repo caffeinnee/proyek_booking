@@ -86,7 +86,14 @@
 
                 <div class="mt-auto pt-6 border-t border-gray-100">
                     <div class="flex items-center px-3 mb-3">
-                        <div class="font-medium text-sm text-gray-800">{{ Auth::user()->name }}</div>
+                        <div class="font-medium text-sm text-gray-800 flex items-center gap-1">
+                            {{ Auth::user()->name }}
+                            @if(Auth::user()->is_verified)
+                                <svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20" title="Verified Partner">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            @endif
+                        </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

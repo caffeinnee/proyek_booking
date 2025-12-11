@@ -42,17 +42,25 @@
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button class="inline-flex items-center px-4 py-2 border border-gray-200 text-sm leading-4 font-bold rounded-full text-gray-700 bg-gray-50 hover:bg-white hover:text-red-700 hover:border-red-200 focus:outline-none transition ease-in-out duration-150 shadow-sm">
-                                        <div>{{ Auth::user()->name }}</div>
+                                        <div class="flex items-center gap-1">
+                                            {{ Auth::user()->name }}
+                                            
+                                            {{-- IKON VERIFIED MERAH (DESKTOP) --}}
+                                            @if(Auth::user()->is_verified)
+                                                <svg class="w-4 h-4 text-red-600 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
+                                        </div>
                                         <div class="ms-1"><svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></div>
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    {{-- PERBAIKAN: Menu Super Admin sekarang standar (hanya Bold) --}}
+                                    {{-- PERUBAHAN: HANYA BOLD, TIDAK ADA WARNA/BACKGROUND KHUSUS --}}
                                     @if(Auth::user()->is_admin)
                                         <x-dropdown-link :href="route('super.dashboard')" class="font-bold">{{ __('Super Admin Panel') }}</x-dropdown-link>
                                     @endif
                                     
-                                    {{-- Menu Mitra standar (hanya Bold) --}}
                                     @if(Auth::user()->role === 'mitra')
                                         <x-dropdown-link :href="route('mitra.index')" class="font-bold">{{ __('Area Mitra') }}</x-dropdown-link>
                                     @endif
@@ -116,15 +124,24 @@
                             </div>
                         </div>
                         <div class="ml-3">
-                            <div class="font-bold text-base text-gray-900">{{ Auth::user()->name }}</div>
+                            <div class="font-bold text-base text-gray-900 flex items-center gap-1">
+                                {{ Auth::user()->name }}
+                                
+                                {{-- IKON VERIFIED MERAH (MOBILE) --}}
+                                @if(Auth::user()->is_verified)
+                                    <svg class="w-4 h-4 text-red-600 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                            </div>
                             <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
                     </div>
 
                     <div class="mt-3 space-y-1 px-2">
-                        {{-- PERBAIKAN: Super Admin Panel sekarang standar (hanya Bold, warna abu-abu/hitam) --}}
+                        {{-- PERBAIKAN SUPER ADMIN PANEL (BOLD + WARNA STANDAR) --}}
                         @if(Auth::user()->is_admin)
-                            <a href="{{ route('super.dashboard') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-700 hover:text-red-700 hover:bg-red-50 hover:border-red-300 rounded-r-lg transition">
+                            <a href="{{ route('super.dashboard') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-r-lg transition">
                                 {{ __('Panel Super Admin') }}
                             </a>
                         @endif
