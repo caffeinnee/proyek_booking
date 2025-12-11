@@ -117,7 +117,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking/{booking}/bayar', [BookingController::class, 'showPayment'])->name('booking.payment');
     Route::patch('/booking/{booking}/bayar', [BookingController::class, 'uploadPayment'])->name('booking.payment.update');
     Route::patch('/booking/{booking}/cancel', [BookingController::class, 'cancel'])->name('booking.user.cancel');
-   
+    Route::get('/booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
+
     Route::get('/mitra/daftar', [MitraController::class, 'create'])->name('mitra.create');
     Route::post('/mitra/simpan', [MitraController::class, 'store'])->name('mitra.store');
     Route::get('/mitra/dashboard', [MitraController::class, 'index'])->name('mitra.index');

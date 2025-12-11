@@ -103,5 +103,14 @@ class BookingController extends Controller
 
         return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
     }
+
+    public function show(Booking $booking)
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        return view('booking.show', compact('booking'));
+    }
     
 }

@@ -82,7 +82,7 @@
                                         <strong class="text-lg text-gray-900">
                                             {{ $booking->lapangan->nama_lapangan }}
                                         </strong>
-                                        {{-- Badge Status Mobile (muncul di sebelah nama lapangan di HP) --}}
+                                        {{-- Badge Status Mobile --}}
                                         <span class="md:hidden px-2.5 py-0.5 text-xs font-bold rounded-full 
                                             @if($booking->status == 'pending') bg-yellow-100 text-yellow-800
                                             @elseif($booking->status == 'confirmed') bg-green-100 text-green-800
@@ -114,28 +114,33 @@
                                         {{ ucfirst($booking->status) }}
                                     </span>
 
-                                    @if($booking->status == 'pending')
-                                        <div class="flex gap-2 w-full md:w-auto">
+                                    <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+                                        
+                                        {{-- TOMBOL DETAIL (BARU) --}}
+                                        <a href="{{ route('booking.show', $booking->id) }}" class="flex-1 md:flex-none text-center text-xs text-gray-700 border border-gray-300 px-3 py-2 rounded-lg bg-white hover:bg-gray-50 font-medium shadow-sm transition">
+                                            Detail
+                                        </a>
+
+                                        @if($booking->status == 'pending')
                                             @if($booking->bukti_bayar)
-                                                <span class="flex-1 md:flex-none text-center text-xs text-red-600 font-semibold border border-red-200 px-3 py-2 rounded-lg bg-red-50">
+                                                <span class="flex-1 md:flex-none text-center text-xs text-blue-600 font-semibold border border-blue-200 px-3 py-2 rounded-lg bg-blue-50">
                                                     Bukti Terkirim
                                                 </span>
                                             @else
-                                                {{-- Tombol Upload Merah --}}
                                                 <a href="{{ route('booking.payment', $booking) }}" class="flex-1 md:flex-none text-center text-xs text-white bg-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition shadow-sm">
-                                                    Bayar / Upload
+                                                    Bayar
                                                 </a>
                                             @endif
 
                                             <form action="{{ route('booking.user.cancel', $booking) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan booking ini?');">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="w-full md:w-auto text-xs text-gray-600 border border-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 transition font-medium">
+                                                <button type="submit" class="w-full md:w-auto text-xs text-red-600 border border-red-200 px-3 py-2 rounded-lg hover:bg-red-50 transition font-medium">
                                                     Batal
                                                 </button>
                                             </form>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </div>
 
                             </div>
