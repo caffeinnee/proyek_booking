@@ -19,6 +19,7 @@ class Lapangan extends Model
         'gambar_url',
         'lokasi',
         'rating',
+        'is_featured',
     ];
 
     public function user()

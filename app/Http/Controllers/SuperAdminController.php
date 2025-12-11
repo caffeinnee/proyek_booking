@@ -101,4 +101,28 @@ class SuperAdminController extends Controller
 
         return redirect()->route('super.dashboard')->with('success', 'Admin baru berhasil ditambahkan!');
     }
+
+    public function toggleVerified(User $user)
+    {
+        $this->checkAccess();
+
+        $user->update([
+            'is_verified' => !$user->is_verified
+        ]);
+
+        $status = $user->is_verified ? 'VERIFIED (Centang Biru)' : 'UNVERIFIED';
+        return back()->with('success', "Status user berhasil diubah menjadi: $status");
+    }
+
+    public function toggleFeatured(Lapangan $lapangan)
+    {
+        $this->checkAccess();
+
+        $lapangan->update([
+            'is_featured' => !$lapangan->is_featured
+        ]);
+
+        $status = $lapangan->is_featured ? 'FEATURED (Iklan Aktif)' : 'REGULER (Iklan Mati)';
+        return back()->with('success', "Status lapangan berhasil diubah menjadi: $status");
+    }
 }

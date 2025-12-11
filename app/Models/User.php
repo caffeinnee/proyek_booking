@@ -27,6 +27,7 @@ class User extends Authenticatable
         'nama_venue',  
         'alamat',       
         'status_mitra', 
+        'is_verified',
     ];
 
     /**

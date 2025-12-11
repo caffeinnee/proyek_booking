@@ -27,7 +27,9 @@ Route::get('/katalog', function (Request $request) {
               ->orWhere('jenis', 'like', '%' . $searchTerm . '%');
     }
 
-    $lapangans = $query->get();
+    $lapangans = $query->orderBy('is_featured', 'desc')
+                       ->latest()
+                       ->get();
     
     return view('katalog', [
         'lapangans' => $lapangans,
@@ -35,20 +37,35 @@ Route::get('/katalog', function (Request $request) {
     ]);
 })->name('katalog');
 
-Route::get('/pasang-storage', function () {
+// --- RUTE PERBAIKAN STORAGE (V2 - LEBIH KUAT) ---
+Route::get('/fix-storage', function () {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
     try {
-        $target = storage_path('app/public');
-        $link = public_path('storage');
-        
-        // Cek dulu apakah folder 'storage' di public sudah ada?
-        if (file_exists($link)) {
-            return "Folder public/storage SUDAH ADA. Hapus dulu lewat File Manager jika ingin link ulang.";
+        // 1. Cek apakah ada folder/link 'storage' lama?
+        if (file_exists($link) || is_link($link)) {
+            // HAPUS DULU!
+            // Coba hapus sebagai symlink/file biasa
+            @unlink($link);
+            // Coba hapus sebagai folder (jika unlink gagal)
+            @rmdir($link); 
+            // Coba cara Laravel (jika folder berisi file)
+            \Illuminate\Support\Facades\File::deleteDirectory($link);
         }
 
+        // 2. Cek lagi, apakah sudah benar-benar hilang?
+        if (file_exists($link)) {
+            return "GAGAL MENGHAPUS! Masih ada folder bernama 'storage' di public_html. Anda wajib menghapusnya manual lewat File Manager cPanel.";
+        }
+
+        // 3. Buat Link Baru
         symlink($target, $link);
-        return "SUKSES! Symlink storage berhasil dibuat. Coba cek gambar sekarang.";
+        
+        return "SUKSES BESAR! Folder storage lama berhasil dihapus dan link baru sudah terpasang. Cek gambar sekarang!";
+        
     } catch (\Exception $e) {
-        return "GAGAL: " . $e->getMessage();
+        return "ERROR: " . $e->getMessage();
     }
 });
 
@@ -83,7 +100,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/super/mitra/{user}/approve', [SuperAdminController::class, 'approveMitra'])->name('super.mitra.approve');
     Route::patch('/super/mitra/{user}/reject', [SuperAdminController::class, 'rejectMitra'])->name('super.mitra.reject');
     Route::get('/super/admin/create', [SuperAdminController::class, 'createAdmin'])->name('super.admin.create');
-    Route::post('/super/admin/store', [SuperAdminController::class, 'storeAdmin'])->name('super.admin.store');
+    Route::post('/super/admin/store', [SuperAdminController::class, 'storeAdmin'])->name('super.admin.store');  
+    Route::patch('/super/user/{user}/verify', [SuperAdminController::class, 'toggleVerified'])->name('super.user.verify');
+    Route::patch('/super/lapangan/{lapangan}/feature', [SuperAdminController::class, 'toggleFeatured'])->name('super.lapangan.feature');
 });
 
 

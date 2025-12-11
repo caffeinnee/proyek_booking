@@ -122,21 +122,42 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($allUsers as $u)
-                                <tr>
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $u->name }}</div>
-                                        <div class="text-xs text-gray-500">{{ $u->email }}</div>
+                                        <div class="flex items-center">
+                                            <div class="text-sm font-medium text-gray-900 mr-2">{{ $u->name }}</div>
+                                            
+                                            {{-- TOMBOL VERIFIED (Bisa diklik admin) --}}
+                                            <form action="{{ route('super.user.verify', $u->id) }}" method="POST" class="inline-block">
+                                                @csrf @method('PATCH')
+                                                <button type="submit" title="Klik untuk Ubah Status Verified" 
+                                                    class="transition transform hover:scale-110 focus:outline-none">
+                                                    @if($u->is_verified)
+                                                        {{-- Ikon Centang Biru (Aktif) --}}
+                                                        <svg class="w-5 h-5 text-blue-500 fill-current" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                                                    @else
+                                                        {{-- Ikon Centang Abu (Tidak Aktif) --}}
+                                                        <svg class="w-5 h-5 text-gray-300 hover:text-blue-300 fill-current" viewBox="0 0 20 20"><path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        </div>
+                                        
+                                        {{-- Badge Role --}}
+                                        <div class="mt-1">
+                                            @if($u->is_admin) <span class="px-2 text-xs font-semibold rounded-full bg-red-100 text-red-800">Admin</span>
+                                            @elseif($u->role === 'mitra') <span class="px-2 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Mitra</span>
+                                            @else <span class="px-2 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">User</span>
+                                            @endif
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($u->is_admin)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Admin</span>
-                                        @elseif($u->role === 'mitra')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">Mitra</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">User</span>
-                                        @endif
-                                    </td>
+                                    
+                                    {{-- Kolom Email & WA tetap sama --}}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $u->email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $u->no_wa ?? '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $u->created_at->diffForHumans() }}</td>
+                                    
+                                    {{-- Aksi Hapus --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         @if($u->id !== Auth::id())
                                             <form action="{{ route('super.users.destroy', $u->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
@@ -144,7 +165,7 @@
                                                 <button type="submit" class="text-red-600 hover:text-red-900 font-bold hover:underline">Hapus</button>
                                             </form>
                                         @else
-                                            <span class="text-gray-400 text-xs italic">Anda</span>
+                                            <span class="text-gray-400 italic text-xs">Anda</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -175,21 +196,55 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($allVenues as $venue)
-                                <tr>
+                                <tr class="hover:bg-gray-50 transition {{ $venue->is_featured ? 'bg-yellow-50' : '' }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-gray-900">{{ $venue->nama_lapangan }}</div>
-                                        <div class="text-xs text-gray-500">{{ $venue->jenis }}</div>
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-lg bg-gray-200 overflow-hidden flex-shrink-0 relative">
+                                                @if($venue->gambar_url)
+                                                    <img src="{{ $venue->gambar_url }}" class="h-full w-full object-cover">
+                                                @else
+                                                    <div class="h-full w-full flex items-center justify-center text-gray-400 text-xs">Img</div>
+                                                @endif
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-bold text-gray-900 flex items-center gap-1">
+                                                    {{ $venue->nama_lapangan }}
+                                                    @if($venue->is_featured)
+                                                        <span class="text-xs bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded font-bold">AD</span>
+                                                    @endif
+                                                </div>
+                                                <div class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded inline-block mt-1">{{ $venue->jenis }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 font-medium">{{ $venue->user->name ?? 'Deleted' }}</div>
+                                        <div class="text-xs text-gray-500">{{ $venue->user->no_wa ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $venue->user->name ?? 'Deleted User' }}
+                                        {{ Str::limit($venue->lokasi, 20) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
                                         Rp {{ number_format($venue->harga_per_jam, 0, ',', '.') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <form action="{{ route('mitra.destroy', $venue->id) }}" method="POST" onsubmit="return confirm('Hapus lapangan ini?');">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-3 items-center">
+                                        {{-- TOMBOL IKLAN (TOGGLE) --}}
+                                        <form action="{{ route('super.lapangan.feature', $venue->id) }}" method="POST">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" 
+                                                class="flex items-center gap-1 px-3 py-1 rounded border {{ $venue->is_featured ? 'bg-yellow-100 text-yellow-700 border-yellow-300' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200' }}"
+                                                title="{{ $venue->is_featured ? 'Matikan Iklan' : 'Aktifkan Iklan' }}">
+                                                <svg class="w-4 h-4" fill="{{ $venue->is_featured ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg>
+                                                <span class="text-xs font-bold">{{ $venue->is_featured ? 'ON' : 'OFF' }}</span>
+                                            </button>
+                                        </form>
+
+                                        {{-- TOMBOL HAPUS --}}
+                                        <form action="{{ route('mitra.destroy', $venue->id) }}" method="POST" onsubmit="return confirm('Hapus venue ini?');">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 font-bold hover:underline">Hapus Paksa</button>
+                                            <button type="submit" class="text-red-600 hover:text-red-900 font-bold" title="Hapus Paksa">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
