@@ -5,17 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Lapangan;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-
     public function create(Lapangan $lapangan)
     {
         return view('booking.create', [
             'lapangan' => $lapangan
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -28,13 +27,13 @@ class BookingController extends Controller
         ]);
 
         $isOccupied = Booking::where('lapangan_id', $validated['lapangan_id'])
-                            ->where('tanggal_booking', $validated['tanggal_booking'])
-                            ->where(function ($query) use ($validated) {
-                                $query->where('jam_mulai', '<', $validated['jam_selesai'])
-                                      ->where('jam_selesai', '>', $validated['jam_mulai']);
-                            })
-                            ->whereIn('status', ['pending', 'confirmed'])
-                            ->exists();
+            ->where('tanggal_booking', $validated['tanggal_booking'])
+            ->where(function ($query) use ($validated) {
+                $query->where('jam_mulai', '<', $validated['jam_selesai'])
+                      ->where('jam_selesai', '>', $validated['jam_mulai']);
+            })
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
 
         if ($isOccupied) {
             return back()
@@ -56,16 +55,16 @@ class BookingController extends Controller
 
     public function showPayment(Booking $booking)
     {
-        if ($booking->user_id !== auth()->id()) {
+        if ($booking->user_id != Auth::id()) {
             abort(403);
         }
-
         return view('booking.payment', ['booking' => $booking]);
     }
 
+    // --- PERBAIKAN: GANTI NAMA FUNGSI JADI uploadPayment (SESUAI ROUTE) ---
     public function uploadPayment(Request $request, Booking $booking)
     {
-        if ($booking->user_id !== auth()->id()) {
+        if ($booking->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -77,19 +76,21 @@ class BookingController extends Controller
             $file = $request->file('bukti_bayar');
             $filename = time() . '_bukti_' . $booking->id . '.' . $file->getClientOriginalExtension();
             
-            $file->move(public_path('images/bukti_bayar'), $filename);
+            // Simpan ke storage 'bukti_bayar' (public_html/storage/bukti_bayar)
+            $file->storeAs('bukti_bayar', $filename, 'public'); 
             
             $booking->update([
-                'bukti_bayar' => 'images/bukti_bayar/' . $filename,
+                'bukti_bayar' => 'bukti_bayar/' . $filename,
             ]);
         }
 
         return redirect()->route('dashboard')->with('success', 'Bukti pembayaran berhasil diunggah! Tunggu konfirmasi admin.');
     }
+    // ----------------------------------------------------------------------
 
     public function cancel(Booking $booking)
     {
-        if ($booking->user_id !== auth()->id()) {
+        if ($booking->user_id != Auth::id()) {
             abort(403);
         }
 
@@ -106,11 +107,41 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        if ($booking->user_id !== auth()->id()) {
+        if ($booking->user_id != Auth::id()) {
             abort(403, 'Akses ditolak.');
         }
 
         return view('booking.show', compact('booking'));
     }
     
+    public function rate(Request $request, Booking $booking)
+    {
+        $request->validate([
+            'bintang' => 'required|integer|min:1|max:5',
+        ]);
+
+        if ($booking->user_id != Auth::id()) {
+            abort(403, 'Bukan bookingan Anda');
+        }
+
+        if ($booking->status !== 'confirmed') {
+            return back()->with('error', 'Booking belum selesai/dikonfirmasi.');
+        }
+
+        $booking->update([
+            'rating_user' => $request->bintang
+        ]);
+
+        $lapangan = $booking->lapangan;
+        
+        $rataRataBaru = Booking::where('lapangan_id', $lapangan->id)
+                            ->whereNotNull('rating_user')
+                            ->avg('rating_user');
+        
+        $lapangan->update([
+            'rating' => round($rataRataBaru, 1)
+        ]);
+
+        return back()->with('success', 'Terima kasih atas bintangnya!');
+    }
 }

@@ -120,7 +120,38 @@
                                         <a href="{{ route('booking.show', $booking->id) }}" class="flex-1 md:flex-none text-center text-xs text-gray-700 border border-gray-300 px-3 py-2 rounded-lg bg-white hover:bg-gray-50 font-medium shadow-sm transition">
                                             Detail
                                         </a>
+                                        @if($booking->status == 'confirmed')
+                                            
+                                            @if($booking->rating_user)
+                                                {{-- Jika SUDAH memberi bintang --}}
+                                                <div class="flex items-center text-yellow-500 bg-yellow-50 px-3 py-1 rounded-lg border border-yellow-200">
+                                                    <span class="text-xs font-bold text-yellow-700 mr-2">Ratingmu:</span>
+                                                    @for($i=0; $i < $booking->rating_user; $i++)
+                                                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                                    @endfor
+                                                </div>
 
+                                            @else
+                                                {{-- Jika BELUM memberi bintang --}}
+                                                <form action="{{ route('booking.rate', $booking->id) }}" method="POST" class="flex items-center gap-2">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    
+                                                    <select name="bintang" class="text-xs border-gray-300 rounded focus:ring-yellow-500 focus:border-yellow-500 py-1" required>
+                                                        <option value="5">⭐⭐⭐⭐⭐</option>
+                                                        <option value="4">⭐⭐⭐⭐</option>
+                                                        <option value="3">⭐⭐⭐</option>
+                                                        <option value="2">⭐⭐</option>
+                                                        <option value="1">⭐</option>
+                                                    </select>
+                                                    
+                                                    <button type="submit" class="px-3 py-1.5 bg-yellow-500 text-white rounded text-xs font-bold hover:bg-yellow-600 transition shadow-sm">
+                                                        Kirim
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                        @endif
                                         @if($booking->status == 'pending')
                                             @if($booking->bukti_bayar)
                                                 <span class="flex-1 md:flex-none text-center text-xs text-blue-600 font-semibold border border-blue-200 px-3 py-2 rounded-lg bg-blue-50">

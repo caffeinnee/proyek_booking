@@ -15,11 +15,12 @@
             {{-- MENU DESKTOP --}}
             <div class="hidden sm:flex flex-1 justify-center space-x-8">
                 @php
+                    // PERBAIKAN HANYA DI SINI: Hapus 'pages.' agar rute terbaca
                     $navLinks = [
                         ['route' => 'welcome', 'label' => 'Beranda'],
                         ['route' => 'katalog', 'label' => 'Katalog'],
-                        ['route' => 'pages.cara-pesan', 'label' => 'Cara Pesan'],
-                        ['route' => 'pages.tentang-kami', 'label' => 'Tentang Kami'],
+                        ['route' => 'cara-pesan', 'label' => 'Cara Pesan'], 
+                        ['route' => 'tentang-kami', 'label' => 'Tentang Kami'],
                     ];
                 @endphp
 
@@ -56,7 +57,6 @@
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    {{-- PERUBAHAN: HANYA BOLD, TIDAK ADA WARNA/BACKGROUND KHUSUS --}}
                                     @if(Auth::user()->is_admin)
                                         <x-dropdown-link :href="route('super.dashboard')" class="font-bold">{{ __('Super Admin Panel') }}</x-dropdown-link>
                                     @endif
@@ -139,7 +139,6 @@
                     </div>
 
                     <div class="mt-3 space-y-1 px-2">
-                        {{-- PERBAIKAN SUPER ADMIN PANEL (BOLD + WARNA STANDAR) --}}
                         @if(Auth::user()->is_admin)
                             <a href="{{ route('super.dashboard') }}" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-r-lg transition">
                                 {{ __('Panel Super Admin') }}

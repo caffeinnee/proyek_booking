@@ -12,7 +12,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->integer('rating_user')->nullable(); // Bintang dari user (1-5)
+            // Kolom untuk menyimpan bintang (1-5)
+            $table->integer('rating_user')->nullable()->after('status');
         });
     }
 
