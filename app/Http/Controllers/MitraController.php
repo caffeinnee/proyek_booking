@@ -242,4 +242,26 @@ class MitraController extends Controller
         $rekening->delete();
         return back()->with('success', 'Rekening berhasil dihapus.');
     }
+    
+    public function checkUpdates()
+    {
+        $user = Auth::user();
+        
+        // Ambil data statistik ringkas saja
+        $mitraBookings = \App\Models\Booking::whereHas('lapangan', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+
+        $data = [
+            'total_pendapatan' => $mitraBookings->where('status', 'confirmed')->sum(function ($booking) {
+                $durasi = \Carbon\Carbon::parse($booking->jam_mulai)->diffInHours(\Carbon\Carbon::parse($booking->jam_selesai));
+                // Handle durasi 0 jika booking < 1 jam (opsional, sesuaikan logika Anda)
+                return $booking->lapangan->harga_per_jam * ($durasi ?: 1);
+            }),
+            'order_pending' => $mitraBookings->where('status', 'pending')->count(),
+            'total_order' => $mitraBookings->count(),
+        ];
+
+        return response()->json($data);
+    }
 }

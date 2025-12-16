@@ -142,6 +142,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/mitra/rekening', [MitraController::class, 'indexRekening'])->name('mitra.rekening.index');
     Route::post('/mitra/rekening', [MitraController::class, 'storeRekening'])->name('mitra.rekening.store');
     Route::delete('/mitra/rekening/{id}', [MitraController::class, 'destroyRekening'])->name('mitra.rekening.destroy');
+    Route::get('/mitra/check-updates', [MitraController::class, 'checkUpdates'])->name('mitra.check.updates');
 });
 
 Route::get('/lapangan/{lapangan}', [App\Http\Controllers\LapanganController::class, 'show'])->name('lapangan.show');

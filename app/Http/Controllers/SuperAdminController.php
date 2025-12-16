@@ -24,11 +24,16 @@ class SuperAdminController extends Controller
     {
         $this->checkAccess();
 
-        $totalUser = User::where('role', 'user')->count();
+        // PERUBAHAN DI SINI:
+        // Menghitung SEMUA data di tabel users (User + Mitra + Admin)
+        $totalUser = User::count(); 
+        
+        // Statistik lainnya tetap spesifik
         $totalMitra = User::where('role', 'mitra')->count();
         $totalLapangan = Lapangan::count();
         $totalBooking = Booking::count();
 
+        // Data list tabel
         $allUsers = User::latest()->paginate(5, ['*'], 'users_page');
         $allVenues = Lapangan::with('user')->latest()->paginate(5, ['*'], 'venues_page');
         $pendingMitras = User::where('status_mitra', 'pending')->latest()->get();
